@@ -1,1 +1,19 @@
-
+name: Extend
+on: 
+#  schedule: 
+#    - cron: 0 0 * * *
+  workflow_dispatch:
+jobs:
+  main:
+    name: ExtendAutomaticly
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4.5.0
+    - name: SetUpDependicies
+      run: |
+        sudo apt update -y
+        sudo apt install -y chromium chromium-driver wget
+        pip3 install selenium
+        wget -O main.py https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/main.py
+        python3 main.py
