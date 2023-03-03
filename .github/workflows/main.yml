@@ -12,6 +12,7 @@ jobs:
       uses: actions/setup-python@v4.5.0
     - name: SetUpDependicies
       run: |
+        sudo add-apt-repository ppa:xtradeb/apps
         sudo apt update -y
         sudo apt install -y chromium chromium-driver wget
         pip3 install selenium
