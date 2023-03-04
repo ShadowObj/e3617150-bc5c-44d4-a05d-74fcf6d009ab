@@ -21,7 +21,7 @@ def extend(broswer: Chrome, account: str,passwd: str, seq: int):
 
 def main():
     parser = ArgumentParser(
-        description="Ct8pl Automatic Expirer"
+        description="Serv00 Automatic Expirer"
     )
     parser.add_argument("-u","--user",help='Usernames(Split By "::")',required=True,type=str)
     parser.add_argument("-p","--passwd",help='Passwords(Split By "::")',required=True,type=str)
@@ -43,7 +43,7 @@ def main():
         for i in range(0,len(users)):
             extend(Chrome(options=chromeOptions), users[i], passwds[i], i)
     else:
-        extend(broswer, args.user, args.passwd, 0)
+        extend(Chrome(options=chromeOptions), args.user, args.passwd, 0)
  
 if __name__ == "__main__":
     main()
