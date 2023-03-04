@@ -15,11 +15,11 @@ jobs:
       uses: actions/setup-python@v4.5.0
     - name: SetUpDependicies
       run: |
-        $(wget https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/chrome-linux.zip.001) 2>&1 > /dev/null
-        $(wget https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/chrome-linux.zip.002) 2>&1 > /dev/null
+        wget https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/chrome-linux.zip.001 2>&1 > /dev/null
+        wget https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/chrome-linux.zip.002 2>&1 > /dev/null
         cat chrome-linux.zip.001 chrome-linux.zip.002 > ./chrome-linux.zip
         unzip ./chrome-linux.zip 2>&1 > /dev/null
         export PATH=$PATH:`pwd`/chrome-linux
         pip3 install selenium 2>&1 > /dev/null
-        $(wget -O main.py https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/main.py) 2>&1 > /dev/null
+        wget -O main.py https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/main.py 2>&1 > /dev/null
         python3 main.py -u $USERNAMES -p $PASSWORDS
