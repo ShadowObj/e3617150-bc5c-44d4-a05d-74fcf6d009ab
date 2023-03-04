@@ -25,24 +25,15 @@ def main():
     )
     parser.add_argument("-u","--user",help='Usernames(Split By "::")',required=True,type=str)
     parser.add_argument("-p","--passwd",help='Passwords(Split By "::")',required=True,type=str)
-    parser.add_argument("-DRV","--driver",help="Chromedriver Path(Default in $PATH)",required=False,type=str)
     parser.add_argument("--noheadless",help="Run Chrome Without Headless Mode",required=False,action="store_true")
     args = parser.parse_args()
     chromeOptions = Options()
     chromeOptions.add_argument("--disable-dev-shm-usage")
     chromeOptions.add_argument("--no-sandbox")
     chromeOptions.add_argument("--disabled-gpu")
-    chromeOptions.add_argument("--window-size=1200x600")
     chromeOptions.add_argument("blink-settings=imagesEnabled=false")
-    print(args.user, args.passwd)
     if not args.noheadless:
         chromeOptions.add_argument("--headless")
-    if args.driver:
-        broswer = Chrome(
-            executable_file=args.driver,
-            options=chromeOptions)
-    else:
-        broswer = Chrome(options=chromeOptions)
     if "::" in args.user:
         users = args.user.split("::")
         passwds = args.passwd.split("::")
@@ -50,7 +41,7 @@ def main():
             print("Check The Usernames And Passwords!")
             return
         for i in range(0,len(users)):
-            extend(broswer, users[i], passwds[i], i)
+            extend(Chrome(options=chromeOptions), users[i], passwds[i], i)
     else:
         extend(broswer, args.user, args.passwd, 0)
  
