@@ -1,48 +1,56 @@
-import requests
-import warnings
-import os
-from bs4 import BeautifulSoup
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 from argparse import ArgumentParser
 
-def login(user: str, passwd: str):
-    warnings.filterwarnings("ignore")
-    reqObj = requests.Session()
-    loginHtml = reqObj.get('https://panel.ct8.pl/login/',verify=False)
-    soup = BeautifulSoup(loginHtml.text, 'lxml')
-    token = soup.select_one('#language_modal > div > div > form > div.modal-body > input[type=hidden]')['value']
-    req = reqObj.post('https://panel.ct8.pl/login/',data={
-        'csrfmiddlewaretoken': token,
-        'username': user,
-        'password': passwd
-    },verify=False)
-    if req.status_code == 302:
-        print(f'{user} Login Success!')
+def extend(broswer: Chrome, account: str,passwd: str, seq: int):
+    print(f"Now Login With Account No.{seq+1}")
+    broswer.get("https://panel.ct8.pl")
+    broswer.implicitly_wait(180)
+    broswer.execute_script('document.cookie="django_language=en";')
+    broswer.find_element(By.NAME, "username").send_keys(account)
+    broswer.find_element(By.NAME, "password").send_keys(passwd)
+    broswer.find_element(By.ID, "submit").click()
+    broswer.implicitly_wait(180)
+    expiration = broswer.find_element(By.XPATH, '//*[@id="dashboard"]/div[1]/div[1]/div/table/tbody/tr[3]/td[2]').get_attribute("textContent")
+    if not expiration == "":
+        print(f"Expiration Date Of No.{seq+1}: {expiration}")
     else:
-        req.raise_for_status()
-    req = reqObj.get('https://panel.ct8.pl/',verify=False)
-    if req.status_code == 200:
-        print(f'{user} Extend Success!')
-    else:
-        req.raise_for_status()
+        print(f"No.{seq+1} Expire Failed")
     return 0
 
 def main():
     parser = ArgumentParser(
-        description='Extend Ct8.pl Account Automatically.'
+        description="Ct8pl Automatic Expirer"
     )
-    parser.add_argument('-u','--user',help="Ct8.pl Usernames,Split By ':'",required=True)
-    parser.add_argument('-p','--passwd',help="Passwords Of Ct8.pl Accounts,Split By ':'",required=True)
+    parser.add_argument("-u","--user",help='Usernames(Split By "::")',required=True,type=str)
+    parser.add_argument("-p","--passwd",help='Passwords(Split By "::")',required=True,type=str)
+    parser.add_argument("-DRV","--driver",help="Chromedriver Path(Default in $PATH)",required=False,type=str)
+    parser.add_argument("--noheadless",help="Run Chrome Without Headless Mode",required=False,action="store_true")
     args = parser.parse_args()
-    if ':' in args.user:
-        users = args.user.split(':')
-        passwds = args.passwd.split(':')
-        if len(users) != len(passwds):
-            print('Your Usernames And Passwords Cannot Correspond To One By One!')
-            return 1
-        for i in range(len(users)):
-            login(users[i], passwds[i])
+    chromeOptions = Options()
+    chromeOptions.add_argument("--disable-dev-shm-usage")
+    chromeOptions.add_argument("--no-sandbox")
+    chromeOptions.add_argument("--disabled-gpu")
+    chromeOptions.add_argument("blink-settings=imagesEnabled=false")
+    if not args.noheadless:
+        chromeOptions.add_argument("--headless")
+    if args.driver:
+        broswer = Chrome(
+            executable_file=args.driver,
+            options=chromeOptions)
     else:
-        login(args.user, args.passwd)
-
-if __name__ == '__main__':
+        broswer = Chrome(options=chromeOptions)
+    if "::" in args.user:
+        users = args.user.split("::")
+        passwds = args.passwd.split("::")
+        if not len(users) == len(passwds):
+            print("Check The Usernames And Passwords!")
+            return
+        for i in range(0,len(users)):
+            extend(broswer, users[i], passwds[i], i)
+    else:
+        extend(broswer, args.user, args.passwd, 0)
+ 
+if __name__ == "__main__":
     main()
