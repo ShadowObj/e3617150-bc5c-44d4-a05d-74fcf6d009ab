@@ -43,7 +43,7 @@ def main():
         for i in range(0,len(users)):
             extend(Chrome(options=chromeOptions), users[i], passwds[i], i)
     else:
-        extend(broswer, args.user, args.passwd, 0)
+        extend(Chrome(options=chromeOptions), args.user, args.passwd, 0)
  
 if __name__ == "__main__":
     main()
