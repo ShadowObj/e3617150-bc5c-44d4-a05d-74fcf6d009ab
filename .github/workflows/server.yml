@@ -1,0 +1,25 @@
+name: Serv00
+on: 
+  schedule: 
+    - cron: 0 0 */7 * *
+  workflow_dispatch:
+jobs:
+  main:
+    name: ExpireAutomaticly
+    runs-on: ubuntu-latest
+    env:
+      USERNAMES: ${{ secrets.USERNAMES00 }}
+      PASSWORDS: ${{ secrets.PASSWORDS00 }}
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4.5.0
+    - name: SetUpDependicies
+      run: |
+        wget -q https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/chrome-linux.zip.001
+        wget -q https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/chrome-linux.zip.002
+        cat chrome-linux.zip.001 chrome-linux.zip.002 > ./chrome-linux.zip
+        unzip ./chrome-linux.zip 2>&1 > /dev/null
+        export PATH=$PATH:`pwd`/chrome-linux
+        pip3 install selenium 2>&1 > /dev/null
+        wget -q -O main.py https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/serv00.py
+        python3 main.py -u $USERNAMES -p $PASSWORDS
