@@ -32,6 +32,7 @@ def main():
     chromeOptions.add_argument("--disable-dev-shm-usage")
     chromeOptions.add_argument("--no-sandbox")
     chromeOptions.add_argument("--disabled-gpu")
+    chromeOptions.add_argument("--window-size=1200x600")
     chromeOptions.add_argument("blink-settings=imagesEnabled=false")
     if not args.noheadless:
         chromeOptions.add_argument("--headless")
