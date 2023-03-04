@@ -1,4 +1,4 @@
-name: Extend
+name: Ct8pl
 on: 
   schedule: 
     - cron: 0 0 */7 * *
