@@ -6,7 +6,10 @@ on:
 jobs:
   main:
     name: ExpireAutomaticly
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+    env:
+      CT8users: ${{ secrets.usernames }}
+      CT8passwds: ${{ secrets.passwords }}
     steps:
     - name: Setup Python
       uses: actions/setup-python@v4.5.0
@@ -19,4 +22,4 @@ jobs:
         export PATH=$PATH:`pwd`/chrome-linux
         pip3 install selenium
         wget -O main.py https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/main.py
-        python3 main.py -u ${{ secrets.usernames }} -p ${{ secrets.usernames }}
+        python3 main.py -u $CT8users -p $CT8passwds
