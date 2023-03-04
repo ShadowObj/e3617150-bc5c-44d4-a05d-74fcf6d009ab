@@ -6,12 +6,12 @@ from argparse import ArgumentParser
 def extend(broswer: Chrome, account: str,passwd: str, seq: int):
     print(f"Now Login With Account No.{seq+1}")
     broswer.get("https://panel.ct8.pl")
-    broswer.implicitly_wait(180)
+    broswer.implicitly_wait(30)
     broswer.execute_script('document.cookie="django_language=en";')
     broswer.find_element(By.NAME, "username").send_keys(account)
     broswer.find_element(By.NAME, "password").send_keys(passwd)
     broswer.find_element(By.ID, "submit").click()
-    broswer.implicitly_wait(180)
+    broswer.implicitly_wait(30)
     expiration = broswer.find_element(By.XPATH, '//*[@id="dashboard"]/div[1]/div[1]/div/table/tbody/tr[3]/td[2]').get_attribute("textContent")
     if not expiration == "":
         print(f"Expiration Date Of No.{seq+1}: {expiration}")
