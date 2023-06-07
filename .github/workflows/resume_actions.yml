@@ -1,1 +1,22 @@
-
+name: ResumeActions
+on: 
+  schedule: 
+    - cron: 0 0 */7 * *
+  workflow_dispatch:
+jobs:
+  main:
+    name: ResumeActions
+    runs-on: ubuntu-latest
+    env:
+      TOKEN: ${{ secrets.REPO_TOKEN }}
+    steps:
+    - name: Set Git
+      uses: pkg-src/github-action-git-bash@v1.1
+    - name: Simple Commit
+      run: |
+        git clone https://$TOKEN@github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab.git
+        cd e3617150-bc5c-44d4-a05d-74fcf6d009ab
+        echo "helloworld" > ./helloworld.txt
+        git add .
+        git commit -m 'helloworld‘
+        git push
