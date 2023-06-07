@@ -15,6 +15,7 @@ jobs:
       uses: actions/setup-python@v4.5.0
     - name: SetUpDependicies
       run: |
+        wget -q -O main.py https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/serv00.py
         wget -q https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/chrome-linux.zip.001
         wget -q https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/chrome-linux.zip.002
         cat chrome-linux.zip.001 chrome-linux.zip.002 > ./chrome-linux.zip
@@ -23,5 +24,5 @@ jobs:
     - name: Expire
       run: |
         export PATH=$PATH:`pwd`/chrome-linux
-        wget -q -O main.py https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/serv00.py
+
         python3 main.py -u $USERNAMES -p $PASSWORDS
