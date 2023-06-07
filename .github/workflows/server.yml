@@ -24,5 +24,4 @@ jobs:
     - name: Expire
       run: |
         export PATH=$PATH:`pwd`/chrome-linux
-
         python3 main.py -u $USERNAMES -p $PASSWORDS
