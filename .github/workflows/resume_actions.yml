@@ -18,6 +18,7 @@ jobs:
         git config --global user.name "Github Actions"
         git clone https://$TOKEN@github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab.git
         cd e3617150-bc5c-44d4-a05d-74fcf6d009ab
+        rm ./*.txt
         echo "helloworld" > ./$RANDOM.txt
         git add .
         git commit -m 'helloworld'
