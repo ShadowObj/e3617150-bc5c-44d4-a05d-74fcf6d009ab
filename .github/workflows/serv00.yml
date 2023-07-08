@@ -16,4 +16,4 @@ jobs:
     - name: SetUpDependicies
       run: |
         wget -q -O main.py https://github.com/ShadowObj/e3617150-bc5c-44d4-a05d-74fcf6d009ab/raw/main/serv00.py
-        python3 main.py -u $USERNAMES -p $PASSWORDS
+        python3 main.py -U $USERNAMES -P $PASSWORDS
