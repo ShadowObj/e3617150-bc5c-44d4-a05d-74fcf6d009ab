@@ -1,39 +1,54 @@
-from selenium.webdriver import Chrome
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
+import re
+import requests
 from argparse import ArgumentParser
 
-def extend(broswer: Chrome, account: str,passwd: str, seq: int):
+def extend(username: str,passwd: str, seq: int, verify = True, showtoken = False):
+    default_header = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.67",
+        "Origin": "https://panel.ct8.pl",
+        "Referer": "https://panel.ct8.pl/login/?next=/"
+    }
+    # request.Session can keep Cookie by itself
+    client = requests.Session()
+    client.cookies.set("django_language","en")
     print(f"Now Login With Account No.{seq+1}")
-    broswer.get("https://panel.ct8.pl")
-    broswer.implicitly_wait(30)
-    broswer.execute_script('document.cookie="django_language=en";')
-    broswer.find_element(By.NAME, "username").send_keys(account)
-    broswer.find_element(By.NAME, "password").send_keys(passwd)
-    broswer.find_element(By.ID, "submit").click()
-    broswer.implicitly_wait(30)
-    expiration = broswer.find_element(By.XPATH, '//*[@id="dashboard"]/div[1]/div[1]/div/table/tbody/tr[3]/td[2]').get_attribute("textContent")
-    if not expiration == "":
-        print(f"Expiration Date Of No.{seq+1}: {expiration}")
+    res = client.get("https://panel.ct8.pl/login/?next=/", verify=verify)
+    pattern = re.compile('[a-zA-Z0-9]{64}')
+    csrf_middleware_token = pattern.findall(res.text)[0]
+    if showtoken:
+        print(f"CSRF_TOKEN: {client.cookies.get('csrftoken')}")
+        print(f"CSRF_MIDDLEWARE_TOKEN: {csrf_middleware_token}")
+
+    res = client.post("https://panel.ct8.pl/login/",{
+        "csrfmiddlewaretoken": csrf_middleware_token,
+        "username": username,
+        "password": passwd,
+        "next": "/"
+    }, headers=default_header,verify=verify)
+    if (not "Please enter a correct username and password. Note that both fields may be case-sensitive." in res.text) & res.ok:
+        print(f"Login Succeed! Code:{str(res.status_code)}")
     else:
-        print(f"No.{seq+1} Expire Failed")
-    return 0
+        print("Login Failed! Check Your Username And Password.")
+#        print(f"Response: {res.text}")
+        return
+
+    res = client.get("https://panel.ct8.pl/dashboard",headers=default_header,verify=verify)
+    if res.ok:
+        print(f"Succeed to Get Dashboard Data!")
+    else:
+        print(f"Failed to Get Dashboard Data! Code:{str(res.status_code)}")
+        print(f"Response: {res.text}")
+    print(f"Expire To {re.search('[A-Za-z.]+ [0-9:, ]+ [a-z.]+', res.text).group(0)}")
 
 def main():
     parser = ArgumentParser(
-        description="Ct8pl Automatic Expirer"
+        description="Ct8.pl Free Server Extender"
     )
-    parser.add_argument("-u","--user",help='Usernames(Split By "::")',required=True,type=str)
-    parser.add_argument("-p","--passwd",help='Passwords(Split By "::")',required=True,type=str)
-    parser.add_argument("--noheadless",help="Run Chrome Without Headless Mode",required=False,action="store_true")
+    parser.add_argument("-U","--user",help='Usernames(Split By "::")',required=True,type=str)
+    parser.add_argument("-P","--passwd",help='Passwords(Split By "::")',required=True,type=str)
+    parser.add_argument("--showtoken",action="store_true",help="Show CSRF_TOKEN and CSRF_MIDDLEWARE_TOKEN(For Debug)")
+    parser.add_argument("--noverify",action="store_false",help="Verify Server-side TLS Cert Or Not(For Debug)")
     args = parser.parse_args()
-    chromeOptions = Options()
-    chromeOptions.add_argument("--disable-dev-shm-usage")
-    chromeOptions.add_argument("--no-sandbox")
-    chromeOptions.add_argument("--disabled-gpu")
-    chromeOptions.add_argument("blink-settings=imagesEnabled=false")
-    if not args.noheadless:
-        chromeOptions.add_argument("--headless")
     if "::" in args.user:
         users = args.user.split("::")
         passwds = args.passwd.split("::")
@@ -41,9 +56,9 @@ def main():
             print("Check The Usernames And Passwords!")
             return
         for i in range(0,len(users)):
-            extend(Chrome(options=chromeOptions), users[i], passwds[i], i)
+            extend(users[i], passwds[i], i, args.noverify, args.showtoken)
     else:
-        extend(Chrome(options=chromeOptions), args.user, args.passwd, 0)
- 
+        extend(args.user, args.passwd, 0, args.noverify, args.showtoken)
+
 if __name__ == "__main__":
     main()
